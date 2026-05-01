@@ -1,0 +1,10 @@
+{
+  "name": "hr-platform-demo",
+  "version": "1.0.0",
+  "description": "企业HR工作平台演示",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Build completed'",
+    "deploy": "vercel --prod"
+  }
+}
