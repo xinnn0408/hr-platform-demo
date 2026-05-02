@@ -996,6 +996,152 @@
                     </div>
                 </div>
 
+                <!-- 轨迹记录 -->
+                <div class="card">
+                    <div class="card-title">📍 轨迹记录</div>
+                    <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px; padding: 15px; color: white;">
+                        <!-- 运动模式选择 -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <div style="flex: 1; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent;">
+                                <div style="font-size: 1.3rem; margin-bottom: 3px;">🏃</div>
+                                <div style="font-size: 0.8rem;">跑步</div>
+                            </div>
+                            <div style="flex: 1; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid #667eea;">
+                                <div style="font-size: 1.3rem; margin-bottom: 3px;">🚴</div>
+                                <div style="font-size: 0.8rem;">骑行</div>
+                            </div>
+                            <div style="flex: 1; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent;">
+                                <div style="font-size: 1.3rem; margin-bottom: 3px;">🚶</div>
+                                <div style="font-size: 0.8rem;">步行</div>
+                            </div>
+                            <div style="flex: 1; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent;">
+                                <div style="font-size: 1.3rem; margin-bottom: 3px;">🏊</div>
+                                <div style="font-size: 0.8rem;">游泳</div>
+                            </div>
+                        </div>
+
+                        <!-- 地图区域 -->
+                        <div style="height: 200px; background: linear-gradient(135deg, #2d3436 0%, #636e72 100%); border-radius: 12px; margin-bottom: 15px; position: relative; overflow: hidden;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=city%20map%20running%20route%20track&image_size=landscape_16_9" alt="运动轨迹地图" style="width: 100%; height: 100%; object-fit: cover;">
+                            
+                            <!-- 起点标记 -->
+                            <div style="position: absolute; top: 25%; left: 20%;">
+                                <div style="width: 24px; height: 24px; background: #27ae60; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px rgba(39, 174, 96, 0.9);">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; background: white; border-radius: 50%;"></div>
+                                </div>
+                                <div style="font-size: 0.65rem; color: white; text-align: center; margin-top: 3px; text-shadow: 1px 1px 2px black;">起点</div>
+                            </div>
+                            
+                            <!-- 终点标记 -->
+                            <div style="position: absolute; top: 65%; left: 75%;">
+                                <div style="width: 24px; height: 24px; background: #e74c3c; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px rgba(231, 76, 60, 0.9);">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; background: white; border-radius: 50%;"></div>
+                                </div>
+                                <div style="font-size: 0.65rem; color: white; text-align: center; margin-top: 3px; text-shadow: 1px 1px 2px black;">终点</div>
+                            </div>
+                            
+                            <!-- 轨迹线路 -->
+                            <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                                <path d="M 20% 25% Q 35% 40%, 50% 30% Q 65% 25%, 75% 65%" stroke="#667eea" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="20%" cy="25%" r="4" fill="#667eea"/>
+                                <circle cx="35%" cy="40%" r="3" fill="#667eea"/>
+                                <circle cx="50%" cy="30%" r="4" fill="#667eea"/>
+                                <circle cx="65%" cy="25%" r="3" fill="#667eea"/>
+                                <circle cx="75%" cy="65%" r="4" fill="#667eea"/>
+                            </svg>
+                            
+                            <!-- 模式标签 -->
+                            <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; display: flex; align-items: center; gap: 5px;">
+                                <span>🚴</span>
+                                <span>骑行中</span>
+                                <span style="background: #e74c3c; width: 8px; height: 8px; border-radius: 50%; animation: pulse 1s infinite;"></span>
+                            </div>
+                            
+                            <!-- 当前位置 -->
+                            <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem;">
+                                📍 当前速度: 12.5 km/h
+                            </div>
+                        </div>
+
+                        <!-- 详细数据面板 -->
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px;">
+                                <div style="font-size: 0.75rem; opacity: 0.7; margin-bottom: 3px;">距离</div>
+                                <div style="font-size: 1.4rem; font-weight: 700;">5.2 <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8;">公里</span></div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px;">
+                                <div style="font-size: 0.75rem; opacity: 0.7; margin-bottom: 3px;">时长</div>
+                                <div style="font-size: 1.4rem; font-weight: 700;">28:35 <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8;">分钟</span></div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px;">
+                                <div style="font-size: 0.75rem; opacity: 0.7; margin-bottom: 3px;">配速</div>
+                                <div style="font-size: 1.4rem; font-weight: 700;">5'30" <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8;">/公里</span></div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px;">
+                                <div style="font-size: 0.75rem; opacity: 0.7; margin-bottom: 3px;">消耗</div>
+                                <div style="font-size: 1.4rem; font-weight: 700;">320 <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8;">千卡</span></div>
+                            </div>
+                        </div>
+
+                        <!-- 心率区间 -->
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 0.85rem;">❤️ 心率区间</span>
+                                <span style="font-size: 1.1rem; font-weight: 600;">145 bpm</span>
+                            </div>
+                            <div style="height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; width: 75%; background: linear-gradient(90deg, #27ae60 0%, #f39c12 50%, #e74c3c 100%); border-radius: 4px;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.65rem; opacity: 0.7;">
+                                <span>轻松</span>
+                                <span>有氧</span>
+                                <span>无氧</span>
+                            </div>
+                        </div>
+
+                        <!-- 控制按钮 -->
+                        <div style="display: flex; gap: 15px;">
+                            <button style="flex: 1; background: rgba(255,255,255,0.2); color: white; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer;">
+                                ⏸️ 暂停
+                            </button>
+                            <button style="flex: 2; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer;">
+                                🎯 结束记录
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 历史轨迹记录 -->
+                <div class="card">
+                    <div class="card-title">📜 历史轨迹</div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px; cursor: pointer;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🚴</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">今日骑行</div>
+                                <div style="font-size: 0.8rem; color: #888;">07:30 - 08:15 | 5.2公里 | 消耗320千卡</div>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #667eea;">查看详情 →</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px; cursor: pointer;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🏃</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">昨日晨跑</div>
+                                <div style="font-size: 0.8rem; color: #888;">06:45 - 07:30 | 6.8公里 | 消耗450千卡</div>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #667eea;">查看详情 →</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px; cursor: pointer;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🚶</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">周末徒步</div>
+                                <div style="font-size: 0.8rem; color: #888;">上周六 | 12.5公里 | 消耗680千卡</div>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #667eea;">查看详情 →</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 今日运动记录 -->
                 <div class="card">
                     <div class="card-title">📝 今日记录</div>
