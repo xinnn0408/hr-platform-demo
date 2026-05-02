@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 我的健康生活</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* 主容器 */
+        .app-container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        /* 顶部状态栏 */
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        /* 头部 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px 20px;
+            text-align: center;
+            color: white;
+            border-radius: 0 0 30px 30px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* 导航栏 */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: white;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .nav-tab {
+            text-align: center;
+            flex: 1;
+            cursor: pointer;
+            padding: 10px 0;
+            position: relative;
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .nav-tab-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .nav-tab-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .nav-tab.active .nav-tab-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* 内容区域 */
+        .content {
+            padding: 20px;
+            min-height: calc(100vh - 250px);
+            padding-bottom: 100px;
+        }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* 运动快捷入口 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%);
+            border-radius: 16px;
+            padding: 18px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e8e8e8;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .action-icon {
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
+
+        .action-label {
+            font-size: 0.75rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        /* 今日数据 */
+        .today-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .today-stat {
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff0f5 100%);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        .today-stat-icon {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .today-stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .today-stat-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        /* 运动记录 */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff0f5 100%);
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+        }
+
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        .activity-info {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .activity-time {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .activity-data {
+            text-align: right;
+        }
+
+        .activity-distance {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .activity-unit {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        /* 好友PK */
+        .friend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff0f5 100%);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 15px;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .friend-info {
+            flex: 1;
+        }
+
+        .friend-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .friend-steps {
+            font-size: 0.85rem;
+            color: #667eea;
+        }
+
+        .friend-rank {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .friend-delta {
+            font-size: 0.75rem;
+            margin-top: 3px;
+            color: #888;
+        }
+
+        /* 动态分享 */
+        .feed-item {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .feed-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .feed-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-right: 12px;
+        }
+
+        .feed-user {
+            flex: 1;
+        }
+
+        .feed-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .feed-time {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .feed-content {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .feed-image {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+
+        .feed-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .feed-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #888;
+            transition: all 0.3s;
+        }
+
+        .feed-stat:hover {
+            color: #667eea;
+        }
+
+        .feed-stat.liked {
+            color: #e74c3c;
+        }
+
+        /* 饮食记录 */
+        .food-upload {
+            border: 2px dashed #ddd;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .food-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        .food-upload:hover .upload-icon {
+            color: #667eea;
+        }
+
+        .upload-text {
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .food-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .food-item {
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff0f5 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .food-item:hover {
+            transform: scale(1.02);
+        }
+
+        .food-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .food-info {
+            padding: 10px;
+        }
+
+        .food-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .food-calories {
+            font-size: 0.75rem;
+            color: #e74c3c;
+            margin-top: 3px;
+        }
+
+        /* 分享卡片 */
+        .share-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            text-align: center;
+        }
+
+        .share-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .share-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .share-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .share-btns {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .share-btn {
+            background: white;
+            color: #667eea;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255,255,255,0.3);
+        }
+
+        /* 训练计划 */
+        .plan-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .plan-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .plan-progress {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .plan-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .plan-days {
+            display: flex;
+            gap: 8px;
+        }
+
+        .plan-day {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .plan-day.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .plan-day.completed {
+            background: #27ae60;
+            color: white;
+        }
+
+        /* 竞品对比 */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .compare-table th, .compare-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.85rem;
+        }
+
+        .compare-table th {
+            background: #f8f9ff;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .compare-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        .compare-rating {
+            color: #ffd700;
+            font-size: 1rem;
+        }
+
+        .compare-check {
+            color: #27ae60;
+            font-size: 1.2rem;
+        }
+
+        .compare-cross {
+            color: #e74c3c;
+            font-size: 1.2rem;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 350px;
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #667eea;
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal-desc {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 运动进行中 */
+        .tracking-container {
+            display: none;
+        }
+
+        .tracking-container.active {
+            display: block;
+        }
+
+        .tracking-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .tracking-time {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .tracking-distance {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .tracking-controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 30px 20px;
+        }
+
+        .tracking-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .tracking-btn.pause {
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+            color: white;
+        }
+
+        .tracking-btn.stop {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .tracking-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 100;
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 5px 15px;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.2);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            color: #888;
+        }
+
+        .nav-item.active .nav-icon {
+            color: #667eea;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .nav-item.active .nav-label {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        /* 成就徽章 */
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .badge-item {
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff0f5 100%);
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+            transition: all 0.3s;
+            opacity: 0.5;
+        }
+
+        .badge-item.unlocked {
+            opacity: 1;
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            border: 2px solid #ffd700;
+        }
+
+        .badge-icon {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .badge-name {
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        /* 响应式 */
+        @media (max-width: 420px) {
+            .app-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 🔋</span>
+        </div>
+
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🏃 FitLife</h1>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-value">8,542</div>
+                    <div class="stat-label">步数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">6.2</div>
+                    <div class="stat-label">公里</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">320</div>
+                    <div class="stat-label">卡路里</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 导航标签 -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showTab('home')">
+                <div class="nav-tab-icon">🏠</div>
+                <div class="nav-tab-label">首页</div>
+            </div>
+            <div class="nav-tab" onclick="showTab('friends')">
+                <div class="nav-tab-icon">👥</div>
+                <div class="nav-tab-label">好友PK</div>
+            </div>
+            <div class="nav-tab" onclick="showTab('food')">
+                <div class="nav-tab-icon">🍎</div>
+                <div class="nav-tab-label">饮食</div>
+            </div>
+            <div class="nav-tab" onclick="showTab('sleep')">
+                <div class="nav-tab-icon">💤</div>
+                <div class="nav-tab-label">睡眠</div>
+            </div>
+            <div class="nav-tab" onclick="showTab('profile')">
+                <div class="nav-tab-icon">👤</div>
+                <div class="nav-tab-label">我的</div>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 首页 -->
+            <div id="home-tab" class="tab-content">
+                <!-- 快捷运动 -->
+                <div class="card">
+                    <div class="card-title">🏃 开始运动</div>
+                    <div class="quick-actions">
+                        <div class="action-btn" onclick="startActivity('run')">
+                            <div class="action-icon">🏃</div>
+                            <div class="action-label">跑步</div>
+                        </div>
+                        <div class="action-btn" onclick="startActivity('bike')">
+                            <div class="action-icon">🚴</div>
+                            <div class="action-label">骑行</div>
+                        </div>
+                        <div class="action-btn" onclick="startActivity('walk')">
+                            <div class="action-icon">🚶</div>
+                            <div class="action-label">步行</div>
+                        </div>
+                        <div class="action-btn" onclick="startActivity('swim')">
+                            <div class="action-icon">🏊</div>
+                            <div class="action-label">游泳</div>
+                        </div>
+                        <div class="action-btn" onclick="startActivity('yoga')">
+                            <div class="action-icon">🧘</div>
+                            <div class="action-label">瑜伽</div>
+                        </div>
+                        <div class="action-btn" onclick="startActivity('gym')">
+                            <div class="action-icon">💪</div>
+                            <div class="action-label">健身</div>
+                        </div>
+                        <div class="action-btn" onclick="startActivity('dance')">
+                            <div class="action-icon">💃</div>
+                            <div class="action-label">舞蹈</div>
+                        </div>
+                        <div class="action-btn" onclick="startActivity('basketball')">
+                            <div class="action-icon">🏀</div>
+                            <div class="action-label">篮球</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 训练计划 -->
+                <div class="card">
+                    <div class="plan-card">
+                        <div style="display: flex; gap: 15px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=fitness%20workout%20weight%20loss%20training&image_size=square" alt="减脂计划" style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div class="plan-header" style="margin-bottom: 5px;">
+                                    <div class="plan-title">🔥 7天减脂计划</div>
+                                    <div class="plan-progress">完成 3/7</div>
+                                </div>
+                                <div class="plan-desc" style="font-size: 0.85rem;">每天30分钟高效燃脂，科学搭配饮食，一周见效！</div>
+                            </div>
+                        </div>
+                        <div class="plan-days" style="margin-top: 15px;">
+                            <div class="plan-day completed">1</div>
+                            <div class="plan-day completed">2</div>
+                            <div class="plan-day completed">3</div>
+                            <div class="plan-day active">4</div>
+                            <div class="plan-day">5</div>
+                            <div class="plan-day">6</div>
+                            <div class="plan-day">7</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 今日数据 -->
+                <div class="card">
+                    <div class="card-title">📊 今日数据</div>
+                    <div class="today-stats">
+                        <div class="today-stat">
+                            <div class="today-stat-icon">👟</div>
+                            <div class="today-stat-value">8,542</div>
+                            <div class="today-stat-label">步数</div>
+                        </div>
+                        <div class="today-stat">
+                            <div class="today-stat-icon">📍</div>
+                            <div class="today-stat-value">6.2</div>
+                            <div class="today-stat-label">公里</div>
+                        </div>
+                        <div class="today-stat">
+                            <div class="today-stat-icon">🔥</div>
+                            <div class="today-stat-value">320</div>
+                            <div class="today-stat-label">千卡</div>
+                        </div>
+                        <div class="today-stat">
+                            <div class="today-stat-icon">💧</div>
+                            <div class="today-stat-value">8</div>
+                            <div class="today-stat-label">杯水</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 今日运动记录 -->
+                <div class="card">
+                    <div class="card-title">📝 今日记录</div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon">🏃</div>
+                            <div class="activity-info">
+                                <div class="activity-title">晨跑</div>
+                                <div class="activity-time">07:30 - 08:15</div>
+                            </div>
+                            <div class="activity-data">
+                                <div class="activity-distance">5.2</div>
+                                <div class="activity-unit">公里</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🧘</div>
+                            <div class="activity-info">
+                                <div class="activity-title">瑜伽练习</div>
+                                <div class="activity-time">10:00 - 10:30</div>
+                            </div>
+                            <div class="activity-data">
+                                <div class="activity-distance">30</div>
+                                <div class="activity-unit">分钟</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🚶</div>
+                            <div class="activity-info">
+                                <div class="activity-title">午间散步</div>
+                                <div class="activity-time">12:00 - 12:30</div>
+                            </div>
+                            <div class="activity-data">
+                                <div class="activity-distance">1.5</div>
+                                <div class="activity-unit">公里</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 好友动态 -->
+                <div class="card">
+                    <div class="card-title">👥 好友动态</div>
+                    <div class="feed-item">
+                        <div class="feed-header">
+                            <div class="feed-avatar">👩</div>
+                            <div class="feed-user">
+                                <div class="feed-name">小红</div>
+                                <div class="feed-time">30分钟前</div>
+                            </div>
+                        </div>
+                        <div class="feed-content">今天完成了5公里晨跑，感觉太棒了！💪 一起加油！</div>
+                        <img class="feed-image" src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=woman%20jogging%20sunrise%20healthy%20fitness&image_size=landscape_4_3" alt="跑步">
+                        <div class="feed-stats">
+                            <div class="feed-stat liked" onclick="toggleLike(this)">
+                                <span>❤️</span>
+                                <span>12</span>
+                            </div>
+                            <div class="feed-stat" onclick="showComment()">
+                                <span>💬</span>
+                                <span>3</span>
+                            </div>
+                            <div class="feed-stat" onclick="sharePost()">
+                                <span>🔗</span>
+                                <span>分享</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-header">
+                            <div class="feed-avatar">👨</div>
+                            <div class="feed-user">
+                                <div class="feed-name">老王</div>
+                                <div class="feed-time">1小时前</div>
+                            </div>
+                        </div>
+                        <div class="feed-content">周末骑行打卡！🚴 20公里完成！</div>
+                        <img class="feed-image" src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=cyclist%20riding%20bicycle%20scenic%20road&image_size=landscape_4_3" alt="骑行">
+                        <div class="feed-stats">
+                            <div class="feed-stat" onclick="toggleLike(this)">
+                                <span>🤍</span>
+                                <span>8</span>
+                            </div>
+                            <div class="feed-stat" onclick="showComment()">
+                                <span>💬</span>
+                                <span>2</span>
+                            </div>
+                            <div class="feed-stat" onclick="sharePost()">
+                                <span>🔗</span>
+                                <span>分享</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 今日天气 -->
+                <div class="card">
+                    <div class="card-title">☀️ 今日天气</div>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 20px; color: white;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="font-size: 3.5rem;">🌤️</div>
+                                <div>
+                                    <div style="font-size: 2rem; font-weight: 700;">26°C</div>
+                                    <div style="opacity: 0.9;">晴朗 | 湿度 65%</div>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600;">空气质量</div>
+                                <div style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; margin-top: 8px;">
+                                    优 AQI 35
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
+                            <div style="font-size: 0.85rem; opacity: 0.9;">
+                                ✅ 今日适合户外运动，建议晨跑或骑行
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 健康监测 -->
+                <div class="card">
+                    <div class="card-title">❤️ 健康监测</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                        <div style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-radius: 12px; padding: 15px; text-align: center;">
+                            <div style="font-size: 1.8rem; margin-bottom: 8px;">❤️</div>
+                            <div style="font-size: 1.2rem; font-weight: 700; color: #c62828;">72</div>
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 3px;">心率</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-radius: 12px; padding: 15px; text-align: center;">
+                            <div style="font-size: 1.8rem; margin-bottom: 8px;">💤</div>
+                            <div style="font-size: 1.2rem; font-weight: 700; color: #1565c0;">7h 32m</div>
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 3px;">睡眠</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 12px; padding: 15px; text-align: center;">
+                            <div style="font-size: 1.8rem; margin-bottom: 8px;">💧</div>
+                            <div style="font-size: 1.2rem; font-weight: 700; color: #2e7d32;">8</div>
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 3px;">杯水</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 健身资讯 -->
+                <div class="card">
+                    <div class="card-title">📚 健身资讯</div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; gap: 12px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=fitness%20nutrition%20healthy%20food&image_size=square" alt="营养指南" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 0.9rem;">运动后如何科学补充营养</div>
+                                <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">科学饮食 | 阅读 3.2k</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=running%20injury%20prevention&image_size=square" alt="跑步技巧" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 0.9rem;">跑步不伤膝的正确姿势</div>
+                                <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">跑步技巧 | 阅读 5.8k</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=home%20workout%20exercise&image_size=square" alt="居家锻炼" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 0.9rem;">居家锻炼的10个高效动作</div>
+                                <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">居家健身 | 阅读 8.1k</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 热门课程 -->
+                <div class="card">
+                    <div class="card-title">🔥 热门课程</div>
+                    <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;">
+                        <div style="flex-shrink: 0; width: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 15px; color: white;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=weight%20training%20gym%20fitness&image_size=square" alt="全身燃脂" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin: 0 auto 10px; display: block;">
+                            <div style="font-weight: 600; font-size: 0.9rem; text-align: center;">全身燃脂</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 5px; text-align: center;">30分钟</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 140px; background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%); border-radius: 15px; padding: 15px; color: white;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=yoga%20relaxation%20meditation&image_size=square" alt="放松瑜伽" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin: 0 auto 10px; display: block;">
+                            <div style="font-weight: 600; font-size: 0.9rem; text-align: center;">放松瑜伽</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 5px; text-align: center;">25分钟</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 140px; background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); border-radius: 15px; padding: 15px; color: white;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=strength%20training%20dumbbells%20fitness&image_size=square" alt="力量训练" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin: 0 auto 10px; display: block;">
+                            <div style="font-weight: 600; font-size: 0.9rem; text-align: center;">力量训练</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 5px; text-align: center;">45分钟</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 140px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 15px; padding: 15px; color: white;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=sprint%20running%20interval%20training&image_size=square" alt="间歇跑" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin: 0 auto 10px; display: block;">
+                            <div style="font-weight: 600; font-size: 0.9rem; text-align: center;">间歇跑</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 5px; text-align: center;">20分钟</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 智能健身计划 -->
+                <div class="card">
+                    <div class="card-title">🎯 智能健身计划</div>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 20px; color: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 1.1rem;">今日训练建议</div>
+                                <div style="font-size: 0.85rem; opacity: 0.9; margin-top: 5px;">AI根据您的身体数据定制</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 15px; font-size: 0.85rem;">
+                                🤖 AI推荐
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=morning%20jogging%20running%20healthy&image_size=square" alt="晨跑" style="width: 60px; height: 60px; border-radius: 15px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 1rem;">晨跑 5公里</div>
+                                <div style="font-size: 0.85rem; opacity: 0.9;">预计用时 40分钟 | 消耗 350千卡</div>
+                            </div>
+                            <div style="background: white; color: #667eea; padding: 10px 20px; border-radius: 20px; font-weight: 600; cursor: pointer;">
+                                开始训练
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 运动督促 -->
+                <div class="card">
+                    <div class="card-title">🔔 运动督促</div>
+                    <div style="background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); border-radius: 15px; padding: 20px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="font-size: 2.5rem;">💪</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #8B4513; font-size: 1rem;">今日运动提醒</div>
+                                <div style="font-size: 0.85rem; color: #888; margin-top: 3px;">距离完成今日目标还差 3,458 步</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <div style="flex: 1; background: white; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer;">
+                                <div style="font-weight: 600; color: #667eea;">开始步行</div>
+                            </div>
+                            <div style="flex: 1; background: white; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer;">
+                                <div style="font-weight: 600; color: #667eea;">稍后提醒</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 好友鼓励 -->
+                <div class="card">
+                    <div class="card-title">💬 好友鼓励</div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">👩</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">小红</div>
+                                <div style="font-size: 0.85rem; color: #666;">加油！今天也要坚持运动哦！💪</div>
+                            </div>
+                            <div style="color: #999; font-size: 0.75rem;">10分钟前</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">👨</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #333;">小明</div>
+                                <div style="font-size: 0.85rem; color: #666;">就差一点了，我等你超越我！🏃</div>
+                            </div>
+                            <div style="color: #999; font-size: 0.75rem;">30分钟前</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 运动装备商城 -->
+                <div class="card">
+                    <div class="card-title">🛒 运动装备</div>
+                    <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;">
+                        <div style="flex-shrink: 0; width: 130px; background: white; border-radius: 12px; padding: 10px; border: 1px solid #eee;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=running%20shoes%20athletic&image_size=square" alt="跑鞋" style="width: 100%; height: 80px; border-radius: 8px; object-fit: cover; margin-bottom: 8px;">
+                            <div style="font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">专业跑鞋</div>
+                            <div style="font-size: 0.8rem; color: #e74c3c; font-weight: 600;">¥299</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 130px; background: white; border-radius: 12px; padding: 10px; border: 1px solid #eee;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=yoga%20mat%20fitness&image_size=square" alt="瑜伽垫" style="width: 100%; height: 80px; border-radius: 8px; object-fit: cover; margin-bottom: 8px;">
+                            <div style="font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">瑜伽垫</div>
+                            <div style="font-size: 0.8rem; color: #e74c3c; font-weight: 600;">¥89</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 130px; background: white; border-radius: 12px; padding: 10px; border: 1px solid #eee;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=water%20bottle%20sports&image_size=square" alt="运动水杯" style="width: 100%; height: 80px; border-radius: 8px; object-fit: cover; margin-bottom: 8px;">
+                            <div style="font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">运动水杯</div>
+                            <div style="font-size: 0.8rem; color: #e74c3c; font-weight: 600;">¥59</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 130px; background: white; border-radius: 12px; padding: 10px; border: 1px solid #eee;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=fitness%20watch%20smart&image_size=square" alt="运动手表" style="width: 100%; height: 80px; border-radius: 8px; object-fit: cover; margin-bottom: 8px;">
+                            <div style="font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">智能手表</div>
+                            <div style="font-size: 0.8rem; color: #e74c3c; font-weight: 600;">¥599</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 附近运动场地 -->
+                <div class="card">
+                    <div class="card-title">📍 附近运动场地</div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=running%20track%20athletic%20field&image_size=square" alt="田径场" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">城市田径场</div>
+                                <div style="font-size: 0.8rem; color: #888;">距您 800m | 免费</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem;">
+                                导航
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=gym%20fitness%20center%20equipment&image_size=square" alt="健身房" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">活力健身俱乐部</div>
+                                <div style="font-size: 0.8rem; color: #888;">距您 1.2km | ¥39/次</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem;">
+                                导航
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=bike%20park%20cycling%20track&image_size=square" alt="骑行道" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">滨江骑行绿道</div>
+                                <div style="font-size: 0.8rem; color: #888;">距您 2.5km | 免费</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem;">
+                                导航
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 挑战活动 -->
+                <div class="card">
+                    <div class="card-title">🎯 挑战活动</div>
+                    <div style="background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 15px; padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <div>
+                                <div style="font-weight: 600; color: #667eea; font-size: 1.1rem;">30天运动挑战</div>
+                                <div style="font-size: 0.85rem; color: #888; margin-top: 5px;">完成挑战赢取徽章</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 600;">
+                                立即参与
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">18</div>
+                                <div style="font-size: 0.8rem; color: #888;">已完成</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #e74c3c;">12</div>
+                                <div style="font-size: 0.8rem; color: #888;">剩余</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">60%</div>
+                                <div style="font-size: 0.8rem; color: #888;">进度</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分享卡片 -->
+                <div class="share-card">
+                    <div class="share-icon">🎉</div>
+                    <div class="share-title">今日运动完成！</div>
+                    <div class="share-desc">已完成 8,542 步，超过 68% 的好友</div>
+                    <div class="share-btns">
+                        <div class="share-btn" onclick="shareTo('wechat')">📱 微信</div>
+                        <div class="share-btn" onclick="shareTo('moments')">📷 朋友圈</div>
+                        <div class="share-btn" onclick="shareTo('qq')">💬 QQ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 好友PK -->
+            <div id="friends-tab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-title">🏆 好友排行榜</div>
+                    <div class="friend-list">
+                        <div class="friend-item">
+                            <div class="friend-avatar">👑</div>
+                            <div class="friend-info">
+                                <div class="friend-name">小明</div>
+                                <div class="friend-steps">12,856 步</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="friend-rank">1</div>
+                                <div class="friend-delta">+2,341</div>
+                            </div>
+                        </div>
+                        <div class="friend-item" style="background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); border: 2px solid #ffd700;">
+                            <div class="friend-avatar">👤</div>
+                            <div class="friend-info">
+                                <div class="friend-name">我</div>
+                                <div class="friend-steps">8,542 步</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="friend-rank">2</div>
+                                <div class="friend-delta">+1,234</div>
+                            </div>
+                        </div>
+                        <div class="friend-item">
+                            <div class="friend-avatar">👩</div>
+                            <div class="friend-info">
+                                <div class="friend-name">小红</div>
+                                <div class="friend-steps">7,832 步</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="friend-rank">3</div>
+                                <div class="friend-delta">+856</div>
+                            </div>
+                        </div>
+                        <div class="friend-item">
+                            <div class="friend-avatar">👨</div>
+                            <div class="friend-info">
+                                <div class="friend-name">老王</div>
+                                <div class="friend-steps">6,423 步</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="friend-rank">4</div>
+                                <div class="friend-delta">+423</div>
+                            </div>
+                        </div>
+                        <div class="friend-item">
+                            <div class="friend-avatar">👧</div>
+                            <div class="friend-info">
+                                <div class="friend-name">小美</div>
+                                <div class="friend-steps">5,123 步</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="friend-rank">5</div>
+                                <div class="friend-delta">-123</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🔥 挑战好友</div>
+                    <div style="display: flex; gap: 15px;">
+                        <div class="action-btn" style="flex: 1;">
+                            <div class="action-icon">👊</div>
+                            <div class="action-label">发起挑战</div>
+                        </div>
+                        <div class="action-btn" style="flex: 1;">
+                            <div class="action-icon">🏅</div>
+                            <div class="action-label">查看战绩</div>
+                        </div>
+                        <div class="action-btn" style="flex: 1;">
+                            <div class="action-icon">🔍</div>
+                            <div class="action-label">添加好友</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🏆 本周冠军</div>
+                    <div style="background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%); border-radius: 15px; padding: 20px; text-align: center; color: white;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">👑</div>
+                        <div style="font-size: 1.3rem; font-weight: 600;">小明</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 5px;">本周步数：89,654</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 饮食记录 -->
+            <div id="food-tab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-title">📸 拍照记录饮食</div>
+                    <div class="food-upload" onclick="uploadFood()">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">点击拍照或上传图片</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🍽️ 今日饮食</div>
+                    <div class="food-list">
+                        <div class="food-item">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=healthy%20breakfast%20oatmeal%20fruit%20bowl&image_size=square" alt="早餐">
+                            <div class="food-info">
+                                <div class="food-name">早餐 - 燕麦水果</div>
+                                <div class="food-calories">380 kcal</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=healthy%20lunch%20salad%20grilled%20chicken&image_size=square" alt="午餐">
+                            <div class="food-info">
+                                <div class="food-name">午餐 - 鸡胸沙拉</div>
+                                <div class="food-calories">420 kcal</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=afternoon%20snack%20apple%20nuts%20healthy&image_size=square" alt="下午茶">
+                            <div class="food-info">
+                                <div class="food-name">下午茶 - 苹果坚果</div>
+                                <div class="food-calories">180 kcal</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=dinner%20vegetables%20fish%20healthy%20meal&image_size=square" alt="晚餐">
+                            <div class="food-info">
+                                <div class="food-name">晚餐 - 清蒸鱼</div>
+                                <div class="food-calories">350 kcal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📊 卡路里统计</div>
+                    <div style="display: flex; justify-content: space-around; margin-top: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">1,330</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 5px;">已摄入</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #e74c3c;">2,000</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 5px;">目标</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">670</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 5px;">剩余</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; height: 12px; background: #eee; border-radius: 6px; overflow: hidden;">
+                        <div style="height: 100%; width: 66.5%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 6px;"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🥗 饮食建议</div>
+                    <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 12px; padding: 15px;">
+                        <div style="font-weight: 600; color: #2e7d32; margin-bottom: 8px;">💡 今日建议</div>
+                        <div style="color: #558b2f; font-size: 0.9rem; line-height: 1.6;">
+                            您今天的卡路里摄入控制得很好！建议下午可以补充一些坚果作为零食，保持能量。记得多喝水哦~
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 健康食谱推荐 -->
+                <div class="card">
+                    <div class="card-title">🍳 健康食谱</div>
+                    <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;">
+                        <div style="flex-shrink: 0; width: 150px; background: white; border-radius: 15px; padding: 12px; border: 1px solid #eee;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=avocado%20toast%20egg%20healthy%20breakfast&image_size=square" alt="牛油果吐司" style="width: 100%; height: 100px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 0.85rem;">牛油果吐司</div>
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 3px;">280 kcal</div>
+                            <div style="font-size: 0.7rem; color: #667eea; margin-top: 5px;">高蛋白 | 低卡</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 150px; background: white; border-radius: 15px; padding: 12px; border: 1px solid #eee;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=quinoa%20salad%20vegetables%20healthy&image_size=square" alt="藜麦沙拉" style="width: 100%; height: 100px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 0.85rem;">藜麦蔬菜沙拉</div>
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 3px;">320 kcal</div>
+                            <div style="font-size: 0.7rem; color: #27ae60; margin-top: 5px;">高纤维 | 减脂</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 150px; background: white; border-radius: 15px; padding: 12px; border: 1px solid #eee;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=salmon%20vegetables%20healthy%20dinner&image_size=square" alt="三文鱼蔬菜" style="width: 100%; height: 100px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 0.85rem;">三文鱼烤蔬菜</div>
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 3px;">450 kcal</div>
+                            <div style="font-size: 0.7rem; color: #e74c3c; margin-top: 5px;">优质蛋白</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 150px; background: white; border-radius: 15px; padding: 12px; border: 1px solid #eee;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=chickpea%20curry%20healthy%20meal&image_size=square" alt="鹰嘴豆咖喱" style="width: 100%; height: 100px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 0.85rem;">鹰嘴豆咖喱</div>
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 3px;">380 kcal</div>
+                            <div style="font-size: 0.7rem; color: #f39c12; margin-top: 5px;">素食 | 饱腹</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 睡眠监测 -->
+            <div id="sleep-tab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-title">💤 昨晚睡眠</div>
+                    <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px; padding: 25px; color: white;">
+                        <div style="display: flex; gap: 20px;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=peaceful%20sleeping%20bed%20moonlight%20night&image_size=square" alt="睡眠" style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover;">
+                            <div style="flex: 1;">
+                                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 5px;">7h 32m</div>
+                                <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px;">优质睡眠时长</div>
+                                <div style="display: flex; gap: 20px;">
+                                    <div>
+                                        <div style="font-size: 1.1rem; font-weight: 600;">4h 15m</div>
+                                        <div style="font-size: 0.7rem; opacity: 0.7;">深睡眠</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 1.1rem; font-weight: 600;">2h 45m</div>
+                                        <div style="font-size: 0.7rem; opacity: 0.7;">浅睡眠</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 1.1rem; font-weight: 600;">32m</div>
+                                        <div style="font-size: 0.7rem; opacity: 0.7;">清醒</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📈 睡眠趋势</div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 120px; padding-top: 20px;">
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 30px; height: 60px; border-radius: 8px; margin: 0 auto 10px;"></div>
+                            <div style="font-size: 0.75rem; color: #888;">周一</div>
+                            <div style="font-size: 0.8rem; font-weight: 600;">6h</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 30px; height: 80px; border-radius: 8px; margin: 0 auto 10px;"></div>
+                            <div style="font-size: 0.75rem; color: #888;">周二</div>
+                            <div style="font-size: 0.8rem; font-weight: 600;">7h</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 30px; height: 70px; border-radius: 8px; margin: 0 auto 10px;"></div>
+                            <div style="font-size: 0.75rem; color: #888;">周三</div>
+                            <div style="font-size: 0.8rem; font-weight: 600;">6.5h</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 30px; height: 90px; border-radius: 8px; margin: 0 auto 10px;"></div>
+                            <div style="font-size: 0.75rem; color: #888;">周四</div>
+                            <div style="font-size: 0.8rem; font-weight: 600;">7.5h</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 30px; height: 50px; border-radius: 8px; margin: 0 auto 10px;"></div>
+                            <div style="font-size: 0.75rem; color: #888;">周五</div>
+                            <div style="font-size: 0.8rem; font-weight: 600;">5.5h</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 30px; height: 100px; border-radius: 8px; margin: 0 auto 10px;"></div>
+                            <div style="font-size: 0.75rem; color: #888;">周六</div>
+                            <div style="font-size: 0.8rem; font-weight: 600;">8h</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); width: 30px; height: 95px; border-radius: 8px; margin: 0 auto 10px; border: 2px solid white; box-shadow: 0 0 15px rgba(39, 174, 96, 0.5);"></div>
+                            <div style="font-size: 0.75rem; color: #888;">今天</div>
+                            <div style="font-size: 0.8rem; font-weight: 600;">7.5h</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">💡 睡眠建议</div>
+                    <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 12px; padding: 15px;">
+                        <div style="font-weight: 600; color: #2e7d32; margin-bottom: 8px;">🌟 睡眠质量优秀</div>
+                        <div style="color: #558b2f; font-size: 0.9rem; line-height: 1.6;">
+                            您昨晚的睡眠质量非常好！深睡眠时间充足，建议保持当前的作息规律。睡前1小时避免使用电子设备，可尝试冥想放松。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">⏰ 睡眠目标</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div style="background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px; padding: 15px; text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">🎯</div>
+                            <div style="font-weight: 600; color: #667eea; margin-bottom: 5px;">每日目标</div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #667eea;">8小时</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 12px; padding: 15px; text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                            <div style="font-weight: 600; color: #667eea; margin-bottom: 5px;">本周达标</div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #27ae60;">5/7天</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🌙 睡前提醒</div>
+                    <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px; padding: 20px; color: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 5px;">智能睡眠提醒</div>
+                                <div style="font-size: 0.85rem; opacity: 0.8;">根据您的作息习惯，建议23:00前入睡</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 10px 20px; border-radius: 20px; font-weight: 600; cursor: pointer;">
+                                开启提醒
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 睡眠音乐 -->
+                <div class="card">
+                    <div class="card-title">🎵 助眠音乐</div>
+                    <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;">
+                        <div style="flex-shrink: 0; width: 130px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 15px; color: white; text-align: center;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=rain%20sounds%20relaxing%20nature&image_size=square" alt="雨声" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">雨声入眠</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 3px;">30分钟</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 130px; background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%); border-radius: 15px; padding: 15px; color: white; text-align: center;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=ocean%20waves%20beach%20relax&image_size=square" alt="海浪" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">海浪声</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 3px;">45分钟</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 130px; background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); border-radius: 15px; padding: 15px; color: white; text-align: center;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=forest%20birds%20nature%20peaceful&image_size=square" alt="森林" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">森林鸟鸣</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 3px;">25分钟</div>
+                        </div>
+                        <div style="flex-shrink: 0; width: 130px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 15px; padding: 15px; color: white; text-align: center;">
+                            <img src="https://neeko-copilot.bytedance.net/api/text_to_image?prompt=meditation%20music%20peaceful%20calm&image_size=square" alt="冥想" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">冥想音乐</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 3px;">60分钟</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 睡眠日记 -->
+                <div class="card">
+                    <div class="card-title">📔 睡眠日记</div>
+                    <div style="background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%); border-radius: 15px; padding: 20px;">
+                        <textarea placeholder="记录今天的心情和睡眠感受..." style="width: 100%; height: 80px; border: none; background: transparent; resize: none; font-size: 0.9rem; color: #333; font-family: inherit;"></textarea>
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                            <div style="background: #ddd; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; color: #666; cursor: pointer;">取消</div>
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; color: white; cursor: pointer;">保存</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 个人中心 -->
+            <div id="profile-tab" class="tab-content" style="display: none;">
+                <div class="card" style="text-align: center; padding: 30px;">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 4px solid #fff; box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);">
+                        👤
+                    </div>
+                    <h2 style="font-size: 1.3rem; margin-bottom: 5px;">运动达人</h2>
+                    <p style="color: #888; margin-bottom: 20px;">Lv.8 | 连续打卡 32 天</p>
+                    <div style="display: flex; justify-content: center; gap: 30px;">
+                        <div class="stat-item">
+                            <div class="stat-value">128</div>
+                            <div class="stat-label">运动次数</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">426</div>
+                            <div class="stat-label">公里</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">23</div>
+                            <div class="stat-label">成就</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🏅 我的成就</div>
+                    <div class="badges-grid">
+                        <div class="badge-item unlocked">
+                            <div class="badge-icon">🥇</div>
+                            <div class="badge-name">新手入门</div>
+                        </div>
+                        <div class="badge-item unlocked">
+                            <div class="badge-icon">🔥</div>
+                            <div class="badge-name">连续7天</div>
+                        </div>
+                        <div class="badge-item unlocked">
+                            <div class="badge-icon">🏃</div>
+                            <div class="badge-name">5公里</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🚴</div>
+                            <div class="badge-name">10公里</div>
+                        </div>
+                        <div class="badge-item unlocked">
+                            <div class="badge-icon">💧</div>
+                            <div class="badge-name">饮水达人</div>
+                        </div>
+                        <div class="badge-item unlocked">
+                            <div class="badge-icon">🌟</div>
+                            <div class="badge-name">完美一周</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">👑</div>
+                            <div class="badge-name">排行榜首</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">💪</div>
+                            <div class="badge-name">百日挑战</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📈 月度统计</div>
+                    <div style="display: flex; justify-content: space-around; margin-top: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #667eea;">24</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 5px;">运动天数</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #e74c3c;">86</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 5px;">小时</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #27ae60;">8,650</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 5px;">千卡</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 运动数据图表 -->
+                <div class="card">
+                    <div class="card-title">📊 运动趋势</div>
+                    <div style="padding: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 100px;">
+                            <div style="flex: 1; text-align: center;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 25px; height: 40px; border-radius: 6px; margin: 0 auto 8px;"></div>
+                                <div style="font-size: 0.7rem; color: #888;">1月</div>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 25px; height: 55px; border-radius: 6px; margin: 0 auto 8px;"></div>
+                                <div style="font-size: 0.7rem; color: #888;">2月</div>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 25px; height: 45px; border-radius: 6px; margin: 0 auto 8px;"></div>
+                                <div style="font-size: 0.7rem; color: #888;">3月</div>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 25px; height: 70px; border-radius: 6px; margin: 0 auto 8px;"></div>
+                                <div style="font-size: 0.7rem; color: #888;">4月</div>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); width: 25px; height: 85px; border-radius: 6px; margin: 0 auto 8px; border: 2px solid white; box-shadow: 0 0 10px rgba(39, 174, 96, 0.4);"></div>
+                                <div style="font-size: 0.7rem; color: #888;">5月</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 运动类型统计 -->
+                <div class="card">
+                    <div class="card-title">🎾 运动偏好</div>
+                    <div style="padding: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="font-size: 1.2rem; margin-right: 12px;">🏃</div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-weight: 600;">跑步</span>
+                                        <span style="color: #667eea;">45%</span>
+                                    </div>
+                                    <div style="height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                                        <div style="height: 100%; width: 45%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="font-size: 1.2rem; margin-right: 12px;">🚴</div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-weight: 600;">骑行</span>
+                                        <span style="color: #e74c3c;">30%</span>
+                                    </div>
+                                    <div style="height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                                        <div style="height: 100%; width: 30%; background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="font-size: 1.2rem; margin-right: 12px;">🧘</div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-weight: 600;">瑜伽</span>
+                                        <span style="color: #27ae60;">15%</span>
+                                    </div>
+                                    <div style="height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                                        <div style="height: 100%; width: 15%; background: linear-gradient(90deg, #27ae60 0%, #1e8449 100%); border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="font-size: 1.2rem; margin-right: 12px;">🏊</div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span style="font-weight: 600;">游泳</span>
+                                        <span style="color: #f39c12;">10%</span>
+                                    </div>
+                                    <div style="height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                                        <div style="height: 100%; width: 10%; background: linear-gradient(90deg, #f39c12 0%, #d68910 100%); border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 1.3rem;">⚙️</span>
+                                <span>设置</span>
+                            </div>
+                            <span style="color: #ccc;">→</span>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 1.3rem;">🔔</span>
+                                <span>通知</span>
+                            </div>
+                            <span style="color: #ccc;">→</span>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 1.3rem;">💬</span>
+                                <span>意见反馈</span>
+                            </div>
+                            <span style="color: #ccc;">→</span>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <span style="font-size: 1.3rem;">ℹ️</span>
+                                <span>关于我们</span>
+                            </div>
+                            <span style="color: #ccc;">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showTab('home')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">首页</div>
+            </div>
+            <div class="nav-item" onclick="showTab('friends')">
+                <div class="nav-icon">👥</div>
+                <div class="nav-label">好友</div>
+            </div>
+            <div class="nav-item" onclick="showTab('food')">
+                <div class="nav-icon">🍎</div>
+                <div class="nav-label">饮食</div>
+            </div>
+            <div class="nav-item" onclick="showTab('sleep')">
+                <div class="nav-icon">💤</div>
+                <div class="nav-label">睡眠</div>
+            </div>
+            <div class="nav-item" onclick="showTab('profile')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 运动开始弹窗 -->
+    <div id="activity-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <div class="modal-icon" id="modal-icon">🏃</div>
+            <div class="modal-title" id="modal-title">开始跑步</div>
+            <div class="modal-desc" id="modal-desc">准备好开始您的运动之旅了吗？</div>
+            <button class="modal-btn" onclick="startTracking()">▶️ 开始</button>
+        </div>
+    </div>
+
+    <!-- 运动追踪界面 -->
+    <div id="tracking-screen" class="tracking-container">
+        <div class="tracking-header">
+            <div class="tracking-time">00:00:00</div>
+            <div class="tracking-distance">0.00 公里</div>
+        </div>
+        <div class="tracking-controls">
+            <button class="tracking-btn pause">⏸️</button>
+            <button class="tracking-btn stop" onclick="stopTracking()">⏹️</button>
+        </div>
+    </div>
+
+    <script>
+        // 切换标签
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + '-tab').style.display = 'block';
+            document.querySelector('.nav-tab:nth-child(' + getTabIndex(tabName) + ')').classList.add('active');
+            document.querySelector('.nav-item:nth-child(' + getTabIndex(tabName) + ')').classList.add('active');
+        }
+
+        function getTabIndex(name) {
+            const tabs = ['home', 'friends', 'food', 'sleep', 'profile'];
+            return tabs.indexOf(name) + 1;
+        }
+
+        // 开始运动
+        const activityIcons = {
+            run: '🏃', bike: '🚴', walk: '🚶', swim: '🏊', 
+            yoga: '🧘', gym: '💪', dance: '💃', basketball: '🏀'
+        };
+        const activityTitles = {
+            run: '开始跑步', bike: '开始骑行', walk: '开始步行', swim: '开始游泳',
+            yoga: '开始瑜伽', gym: '开始健身', dance: '开始舞蹈', basketball: '开始篮球'
+        };
+
+        function startActivity(type) {
+            document.getElementById('modal-icon').textContent = activityIcons[type];
+            document.getElementById('modal-title').textContent = activityTitles[type];
+            document.getElementById('activity-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('activity-modal').classList.remove('active');
+        }
+
+        // 运动追踪
+        function startTracking() {
+            closeModal();
+            document.querySelector('.app-container').style.display = 'none';
+            document.getElementById('tracking-screen').classList.add('active');
+        }
+
+        function stopTracking() {
+            document.getElementById('tracking-screen').classList.remove('active');
+            document.querySelector('.app-container').style.display = 'block';
+            alert('运动记录已保存！');
+        }
+
+        // 分享功能
+        function shareTo(platform) {
+            const messages = {
+                wechat: '微信分享成功！',
+                moments: '朋友圈分享成功！',
+                qq: 'QQ分享成功！'
+            };
+            alert(messages[platform]);
+        }
+
+        // 上传食物
+        function uploadFood() {
+            alert('正在打开相机...\n（模拟上传功能）');
+        }
+
+        // 动态互动
+        function toggleLike(element) {
+            element.classList.toggle('liked');
+            const icon = element.querySelector('span:first-child');
+            const count = element.querySelector('span:last-child');
+            
+            if (element.classList.contains('liked')) {
+                icon.textContent = '❤️';
+                count.textContent = parseInt(count.textContent) + 1;
+            } else {
+                icon.textContent = '🤍';
+                count.textContent = parseInt(count.textContent) - 1;
+            }
+        }
+
+        function showComment() {
+            alert('评论功能开发中...');
+        }
+
+        function sharePost() {
+            alert('分享到朋友圈成功！');
+        }
+    </script>
+</body>
+</html>
