@@ -806,7 +806,17 @@
             .story-card img { margin: 0 auto; }
             .donate-box { padding: 30px 20px; }
         }
-    </style>
+    
+        .visitor-counter {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        .visitor-counter span { color: #818cf8; font-weight: 600; }
+</style>
 </head>
 <body>
     <!-- 浮动爱心装饰 -->
@@ -1297,5 +1307,13 @@
             });
         });
     </script>
+    <div class="visitor-counter">💖 访客 <span id="vc-animal">...</span> 人</div>
+    <script>
+        fetch('https://api.countapi.xyz/hit/hr-platform/animal-rescue')
+            .then(r => r.json())
+            .then(d => document.getElementById('vc-animal').textContent = d.value)
+            .catch(() => document.getElementById('vc-animal').textContent = '✨');
+    </script>
+
 </body>
 </html>
