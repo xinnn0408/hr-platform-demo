@@ -3,233 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>❤️ Python 爱心 · 网页版</title>
+<title>❤️ 全世界最帅的狮狮</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  background: #1a1a2e;
+  background: #0d0d1a;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
+  font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
   overflow: hidden;
+  user-select: none;
 }
 canvas {
   display: block;
-  border-radius: 16px;
-  box-shadow: 0 0 60px rgba(255,107,157,0.3);
   max-width: 100vw;
-  max-height: 80vh;
-}
-.title {
-  color: #fff;
-  font-size: 24px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-.title span { color: #ff6b9d; }
-.subtitle {
-  color: #636e72;
-  font-size: 14px;
-  margin-top: 16px;
-  text-align: center;
-}
-.controls {
-  margin-top: 16px;
-  display: flex;
-  gap: 10px;
-}
-.controls button {
-  background: rgba(255,107,157,0.2);
-  border: 1px solid rgba(255,107,157,0.4);
-  color: #fff;
-  padding: 8px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all .3s;
-}
-.controls button:hover {
-  background: rgba(255,107,157,0.4);
-}
-.controls button.active {
-  background: #ff6b9d;
-  border-color: #ff6b9d;
+  max-height: 100vh;
 }
 </style>
 </head>
 <body>
-<div class="title">❤️ <span>Python</span> 爱心 · 网页版</div>
-<canvas id="canvas"></canvas>
-<div class="controls">
-  <button class="active" onclick="switchMode('draw')">🎨 绘制</button>
-  <button onclick="switchMode('pulse')">💗 跳动</button>
-  <button onclick="switchMode('particles')">✨ 粒子</button>
-</div>
-<div class="subtitle" id="modeLabel">🖌️ 正在绘制爱心...</div>
+<canvas id="c"></canvas>
 <script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-
-let W, H, scale;
-let mode = 'draw';
-let time = 0;
-let particles = [];
-let drawProgress = 0;
-let heartPoints = [];
+const c = document.getElementById('c');
+const ctx = c.getContext('2d');
+let W, H, t = 0, pts = [], mode = 'draw', progress = 0;
 
 function resize() {
-  const maxW = window.innerWidth * 0.9;
-  const maxH = window.innerHeight * 0.75;
-  const size = Math.min(maxW, maxH, 600);
-  canvas.width = size * devicePixelRatio;
-  canvas.height = size * devicePixelRatio;
-  canvas.style.width = size + 'px';
-  canvas.style.height = size + 'px';
-  W = canvas.width;
-  H = canvas.height;
+  const s = Math.min(window.innerWidth, window.innerHeight);
+  W = c.width = window.innerWidth * devicePixelRatio;
+  H = c.height = window.innerHeight * devicePixelRatio;
+  c.style.width = window.innerWidth + 'px';
+  c.style.height = window.innerHeight + 'px';
   ctx.scale(devicePixelRatio, devicePixelRatio);
-  // Reset for non-retina coordinates
-  W = size;
-  H = size;
-  scale = size / 400;
-  
-  // Generate heart points
-  heartPoints = [];
-  for (let t = 0; t <= Math.PI * 2; t += 0.02) {
-    const x = 16 * Math.pow(Math.sin(t), 3);
-    const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-    heartPoints.push({
-      x: W/2 + x * scale * 10,
-      y: H/2 - y * scale * 8 - 10 * scale
-    });
-  }
+  generateHeart(s / 400);
 }
 resize();
 window.addEventListener('resize', resize);
 
-function switchMode(m) {
-  mode = m;
-  time = 0;
-  drawProgress = 0;
-  document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  const labels = { 'draw': '🖌️ 正在绘制爱心...', 'pulse': '💗 爱心跳动中...', 'particles': '✨ 粒子爱心...' };
-  document.getElementById('modeLabel').textContent = labels[m];
-  if (m === 'particles') initParticles();
-}
-
-function initParticles() {
-  particles = [];
-  for (let i = 0; i < 200; i++) {
-    const p = heartPoints[Math.floor(Math.random() * heartPoints.length)];
-    particles.push({
-      x: p.x, y: p.y,
-      ox: p.x, oy: p.y,
-      vx: (Math.random() - 0.5) * 2,
-      vy: (Math.random() - 0.5) * 2,
-      size: 1 + Math.random() * 2,
-      hue: 340 + Math.random() * 30,
-      phase: Math.random() * Math.PI * 2
-    });
+function generateHeart(s) {
+  pts = [];
+  const cx = window.innerWidth / 2, cy = window.innerHeight / 2 - 40 * s;
+  for (let a = 0; a <= Math.PI * 2; a += 0.02) {
+    const x = 16 * Math.pow(Math.sin(a), 3);
+    const y = 13 * Math.cos(a) - 5 * Math.cos(2*a) - 2 * Math.cos(3*a) - Math.cos(4*a);
+    pts.push({ x: cx + x * s * 11, y: cy - y * s * 8.5 });
   }
 }
 
-function drawHeart(ctx, progress, offsetX, offsetY, color) {
-  const count = Math.floor(heartPoints.length * progress);
-  ctx.beginPath();
-  ctx.moveTo(heartPoints[0].x + offsetX, heartPoints[0].y + offsetY);
-  for (let i = 1; i < count; i++) {
-    ctx.lineTo(heartPoints[i].x + offsetX, heartPoints[i].y + offsetY);
-  }
-  ctx.closePath();
-  ctx.fillStyle = color || '#ff6b9d';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-}
+function draw(t) {
+  W2 = window.innerWidth; H2 = window.innerHeight;
+  ctx.clearRect(0, 0, W2, H2);
+  ctx.fillStyle = '#0d0d1a';
+  ctx.fillRect(0, 0, W2, H2);
 
-function drawPulse(ctx, t) {
-  const beat = Math.abs(Math.sin(t * 3));
-  const pulse = 1 + beat * 0.08;
-  ctx.save();
-  ctx.translate(W/2 * (1 - pulse), H/2 * (1 - pulse));
-  ctx.scale(pulse, pulse);
-  drawHeart(ctx, 1, 0, 0, '#ff6b9d');
-  ctx.restore();
-  
-  // Glow
-  const glow = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, 80 * scale);
-  glow.addColorStop(0, `rgba(255,107,157,${0.15 * beat})`);
-  glow.addColorStop(1, 'rgba(255,107,157,0)');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, W, H);
-}
+  progress = Math.min(1, progress + 0.005);
+  const count = Math.floor(pts.length * progress);
+  const s = Math.min(window.innerWidth, window.innerHeight) / 400;
 
-function drawParticles(ctx, t) {
-  ctx.fillStyle = 'rgba(26,26,46,0.3)';
-  ctx.fillRect(0, 0, W, H);
-  
-  particles.forEach((p, i) => {
-    const targetX = p.ox + Math.sin(t * 0.5 + p.phase) * 20 * scale;
-    const targetY = p.oy + Math.cos(t * 0.5 + p.phase) * 20 * scale;
-    p.x += (targetX - p.x) * 0.05;
-    p.y += (targetY - p.y) * 0.05;
-    
-    const alpha = 0.5 + Math.sin(t + p.phase) * 0.3;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size * scale, 0, Math.PI * 2);
-    ctx.fillStyle = `hsla(${p.hue}, 100%, 70%, ${alpha})`;
-    ctx.fill();
-  });
-  
-  // Center text
-  ctx.fillStyle = 'rgba(255,255,255,0.8)';
-  ctx.font = `${24 * scale}px Arial`;
-  ctx.textAlign = 'center';
-  ctx.fillText('❤️ I ❤️ Python', W/2, H/2 + 60 * scale);
-}
+  if (count > 1) {
+    // Glow
+    ctx.shadowColor = '#ff6b9d';
+    ctx.shadowBlur = 30;
 
-function animate() {
-  ctx.clearRect(0, 0, W, H);
-  
-  // Dark background
-  ctx.fillStyle = '#1a1a2e';
-  ctx.fillRect(0, 0, W, H);
-  
-  time += 0.016;
-  
-  if (mode === 'draw') {
-    drawProgress = Math.min(1, drawProgress + 0.008);
-    const grad = ctx.createLinearGradient(0, 0, W, H);
-    grad.addColorStop(0, '#ff6b9d');
+    // Gradient fill
+    const grad = ctx.createRadialGradient(W2/2, H2/2 - 20*s, 0, W2/2, H2/2 - 20*s, 100*s);
+    grad.addColorStop(0, '#ff9bbf');
+    grad.addColorStop(0.5, '#ff6b9d');
     grad.addColorStop(1, '#ee5a24');
-    drawHeart(ctx, drawProgress, 0, 0, grad);
-    
-    // Text
-    if (drawProgress >= 0.8) {
-      const ta = Math.min(1, (drawProgress - 0.8) * 5);
-      ctx.fillStyle = `rgba(255,255,255,${ta})`;
-      ctx.font = `${20 * scale}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.fillText('❤️ I ❤️ Python', W/2, H/2 + 60 * scale);
+    ctx.fillStyle = grad;
+
+    // Draw heart with taper effect
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < count; i++) {
+      const prev = pts[i - 1];
+      const midX = (prev.x + pts[i].x) / 2;
+      const midY = (prev.y + pts[i].y) / 2;
+      ctx.quadraticCurveTo(prev.x, prev.y, midX, midY);
     }
-  } else if (mode === 'pulse') {
-    drawPulse(ctx, time);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = `${20 * scale}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.fillText('❤️ I ❤️ Python', W/2, H/2 + 60 * scale);
-  } else if (mode === 'particles') {
-    drawParticles(ctx, time);
+    ctx.closePath();
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Sparkle edges
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
   }
-  
-  requestAnimationFrame(animate);
+
+  // Particles floating
+  if (progress > 0.3) {
+    const pCount = Math.floor(progress * 30);
+    for (let i = 0; i < pCount; i++) {
+      const pi = Math.floor(Math.random() * pts.length);
+      const px = pts[pi].x + (Math.random() - 0.5) * 60 * s;
+      const py = pts[pi].y + (Math.random() - 0.5) * 60 * s;
+      const size = Math.random() * 2 + 1;
+      ctx.beginPath();
+      ctx.arc(px, py, size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 155, 191, ${Math.random() * 0.4 + 0.1})`;
+      ctx.fill();
+    }
+  }
+
+  // Text when heart is complete enough
+  if (progress > 0.75) {
+    const alpha = Math.min(1, (progress - 0.75) * 8);
+    const glow = `rgba(255, 107, 157, ${alpha * 0.2})`;
+    ctx.shadowColor = glow;
+    ctx.shadowBlur = 20;
+
+    ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+    ctx.font = `bold ${28 * s}px "PingFang SC", "Microsoft YaHei", Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('❤️  全世界最帅的狮狮  ❤️', W2 / 2, H2 / 2 + 95 * s);
+
+    ctx.shadowBlur = 0;
+  }
+
+  requestAnimationFrame(draw);
 }
-animate();
+draw();
+
+// Click to switch mode
+document.addEventListener('click', () => {
+  if (mode === 'draw') {
+    mode = 'pulse';
+    progress = 1;
+  } else if (mode === 'pulse') {
+    mode = 'draw';
+    progress = 0;
+  }
+});
 </script>
 </body>
 </html>
